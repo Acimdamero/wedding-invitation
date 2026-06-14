@@ -36,6 +36,7 @@ CAR_FULL = SRC / (
     "2f3ad881-5d41-4850-8b40-1f92aa6013d8-"
     "024506f3-a0f7-4b02-9d48-721b19dafe5e.png"
 )
+CHILDHOOD = SRC / "image-f2a1868d-5071-4b55-b633-6e6c3424c1d0.png"
 
 JPG_QUALITY = 85
 
@@ -237,6 +238,19 @@ def main() -> None:
     # Crop right edge (sign) and reduce sky/pavement
     g6_box = crop_box_aspect(fw, fh, 1, 1, cx=0.42, cy=0.44)
     process_and_save(car_full, "gallery-06", g6_box, 900, 900, grade="warm")
+
+    # --- Childhood collage: Love Story banner + gallery ---
+    childhood = Image.open(CHILDHOOD).convert("RGB")
+    chw, chh = childhood.size
+    top_crop = int(chh * 0.08)
+    childhood = childhood.crop((0, top_crop, chw, chh))
+    chw, chh = childhood.size
+    childhood_story_box = crop_box_aspect(chw, chh, 4, 5, cx=0.50, cy=0.48)
+    process_and_save(
+        childhood, "childhood", childhood_story_box, 1000, 1250, grade="warm"
+    )
+    g7_box = crop_box_aspect(chw, chh, 1, 1, cx=0.50, cy=0.45)
+    process_and_save(childhood, "gallery-07", g7_box, 900, 900, grade="warm")
 
     # Print summary
     print("\nCreated files:")

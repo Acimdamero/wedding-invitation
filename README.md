@@ -6,7 +6,7 @@ A complete, deployable digital wedding invitation website built with pure HTML, 
 
 - **Opening cover/envelope animation** — classic Indonesian digital invite experience
 - **Bilingual structure** — Indonesian & English labels throughout
-- **Countdown timer** — to wedding date (14 June 2026)
+- **Countdown timer** — to wedding date (22 July 2026)
 - **Couple profiles** — with placeholder photo slots
 - **Love story timeline** — scroll-reveal animations
 - **Event schedule** — Akad Nikah & Resepsi cards
@@ -51,7 +51,7 @@ wedding-invitation/
 
 Background music streams from **YouTube** via the [IFrame Player API](https://developers.google.com/youtube/iframe_api_reference) (hidden player, audio only):
 
-- Current track: https://youtu.be/-a-vbOxM-6s (`YOUTUBE_VIDEO_ID = '-a-vbOxM-6s'` in `js/main.js`)
+- Current track: https://youtu.be/bLmDVZRhhRE (`YOUTUBE_VIDEO_ID = 'bLmDVZRhhRE'` in `js/main.js`)
 - Playback starts after the guest taps **Buka Undangan** (user gesture required for autoplay)
 - Loop is enabled via `loop: 1` and matching `playlist` parameter
 - Play/pause is controlled by the floating music toggle button
@@ -117,7 +117,7 @@ Or connect your GitHub repo at [vercel.com](https://vercel.com) — no framework
 - **Mobile autoplay**: iOS Safari may require an additional tap on the music toggle. YouTube playback on mobile can be less reliable than native `<audio>`.
 - **RSVP & wishes**: Frontend-only demo — data is not persisted. Connect to a backend (Google Sheets, Formspree, Firebase, etc.) for production.
 - **Gallery images**: Loaded from Unsplash CDN — requires internet connection. Replace with local assets for offline use.
-- **Google Maps**: Embed uses a demo location (Monas, Jakarta). Replace with actual venue coordinates.
+- **Google Maps**: Embedded map for Maxi's Resto, Bandung (Jl. Gunung Agung No.8).
 
 ## Browser Support
 

@@ -1,6 +1,6 @@
 # Photo Editing Notes — Budi & Sari Wedding Invitation
 
-Processed from 5 client source images. Warm color grading applied site-wide to match the cream/sage/gold palette (`#f7f5f0`, `#8b9a7e`, `#c4a882`).
+Processed from 6 client source images. Warm color grading applied site-wide to match the cream/sage/gold palette (`#f7f5f0`, `#8b9a7e`, `#c4a882`).
 
 ## Source → Output Mapping
 
@@ -10,7 +10,9 @@ Processed from 5 client source images. Warm color grading applied site-wide to m
 | `og.jpg` | Tropical villa (#4) | 1200×630 social crop, warm grade | Open Graph / share preview |
 | `groom.jpg` | Restaurant collage top (#1) | Split collage; 1:1 crop on groom (right side); removed busy table foreground | Couple section — Budi |
 | `bride.jpg` | Tropical villa (#4) | 1:1 crop on bride (left side), upper body | Couple section — Sari |
-| `story.jpg` | Car trunk color (#2) | 4:5 portrait; trimmed sky/pavement dead space | Love Story section banner |
+| `story.jpg` | Car trunk color (#2) | 4:5 portrait; trimmed sky/pavement dead space | *(replaced by childhood.jpg in Love Story)* |
+| `childhood.jpg` | Childhood collage (#6) | 4:5 portrait; top 8% cropped (Pinterest watermark); warm grade | Love Story section banner — "Our Beginning" |
+| `gallery-07.jpg` | Childhood collage (#6) | 1:1 center crop on heart collage; warm grade | Gallery |
 | `gallery-01.jpg` | Tropical villa (#4) | 1:1 couple portrait | Gallery |
 | `gallery-02.jpg` | Car trunk color (#2) | 1:1, couple on trunk | Gallery |
 | `gallery-03.jpg` | Car B&W (#3) | 1:1; warm cream/charcoal duotone (sage `#2c3328` → cream `#e8d5b5`) | Gallery |
@@ -47,9 +49,14 @@ WebP versions (`.webp`) of each file are also exported for optional `<picture>` 
 - **Trimmed** dead sky and foreground pavement.
 - License plate remains visible at this crop — consider a tighter crop or retouch if client prefers.
 
+### 6. Childhood collage (heart scrapbook)
+- **Cropped** top ~8% to remove Pinterest watermark attribution.
+- **Graded** with warm tone (strength 1.05) to harmonize with site palette.
+- 4:5 export → `childhood.jpg` for Love Story banner; 1:1 center crop → `gallery-07.jpg`.
+
 ## Photos Not Skipped
 
-All 5 source images were used. The restaurant collage yielded 2 usable frames from 1 file.
+All 6 source images were used. The restaurant collage yielded 2 usable frames from 1 file.
 
 ## Re-processing
 

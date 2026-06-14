@@ -6,8 +6,8 @@
 (function () {
   'use strict';
 
-  // Wedding date: June 14, 2026 at 08:00 WIB (UTC+7)
-  const WEDDING_DATE = new Date('2026-06-14T08:00:00+07:00');
+  // Wedding date: July 22, 2026 at 08:00 WIB (UTC+7)
+  const WEDDING_DATE = new Date('2026-07-22T08:00:00+07:00');
 
   // DOM Elements
   const cover = document.getElementById('cover');
@@ -28,7 +28,7 @@
   const shareToast = document.getElementById('shareToast');
   const shareWa = document.getElementById('shareWa');
 
-  const YOUTUBE_VIDEO_ID = '-a-vbOxM-6s';
+  const YOUTUBE_VIDEO_ID = 'bLmDVZRhhRE';
 
   let isMusicPlaying = false;
   let youtubePlayer = null;
