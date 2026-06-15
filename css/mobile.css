@@ -153,6 +153,9 @@ a.btn,
     opacity: 0.35;
   }
 }
+
+/* Full viewport height — address bar safe (iOS Safari, Android Chrome) */
+.cover {
   min-height: 100vh;
   min-height: 100svh;
   min-height: 100dvh;

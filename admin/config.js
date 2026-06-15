@@ -6,5 +6,5 @@ window.ADMIN_CONFIG = {
   slug: 'erzal-dhea',
   supabaseUrl: 'YOUR_SUPABASE_URL',
   supabaseAnonKey: 'YOUR_SUPABASE_ANON_KEY',
-  siteUrl: '../index.html',
+  siteUrl: 'https://erzal-dhea-wedding.vercel.app/',
 };

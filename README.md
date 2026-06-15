@@ -11,10 +11,11 @@ A complete, deployable digital wedding invitation website built with pure HTML, 
 - **Opening cover/envelope animation** — classic Indonesian digital invite experience
 - **Bilingual structure** — Indonesian & English labels throughout
 - **Countdown timer** — to Akad Nikah date (13 July 2026, Makkah)
-- **Couple profiles** — Erzal Maulana Sandrya & Dhea Fadhillah Ramlan
+- **Couple profiles** — Erzal Maulana Sandrya & Dhea Fadhillah Ramlan (elegant text cards with Islamic frames — photos optional)
 - **Love story timeline** — Instagram meet (2022) through Makkah akad (2026)
 - **Event schedule** — Akad Nikah (Makkah) & Resepsi (Maxi's Resto, Bandung)
-- **Photo gallery** — with lightbox viewer
+- **Photo gallery** — optional; disabled by default (`PHOTOS_ENABLED: false`)
+- **Masjidil Haram layered theme** — full-site background, arabesque pattern, 3D gold ornaments
 - **Beat-synced animations** — rhythmic visual pulse synced to background music
 - **RSVP form** — Supabase-backed attendance confirmation (with demo fallback)
 - **Guest book / wishes** — Supabase-backed messages (with demo fallback)
@@ -46,7 +47,8 @@ wedding-invitation/
 │   └── mobile.css          # Android & iOS touch/viewport overrides
 ├── js/
 │   ├── main.js             # Interactivity & logic
-│   ├── config.js           # Public Supabase config (anon key)
+│   ├── config.js           # Public config (Supabase, PHOTOS_ENABLED, canonicalUrl)
+│   ├── config.example.js   # Template with placeholders
 │   ├── rsvp.js             # RSVP submit handler
 │   ├── wishes.js           # Wishes submit handler
 │   ├── beat-sync.js        # BeatEngine — rhythmic pulse
@@ -55,7 +57,8 @@ wedding-invitation/
 ├── assets/
 │   ├── ornaments/          # SVG decorative elements (Islamic + Sunda)
 │   │   └── sunda/          # Janur, melati, rumah adat, seserahan motifs
-│   └── photos/             # Couple photos
+│   ├── backgrounds/        # Masjidil Haram site background (Pexels, see ATTRIBUTION.md)
+│   └── photos/             # Couple photos (kept for quick re-enable)
 ├── PHOTO-SUGGESTIONS.md    # Client photo recommendations
 └── README.md
 ```
@@ -79,9 +82,22 @@ Background music streams from **YouTube** via the [IFrame Player API](https://de
 - Playback starts at **24 seconds** (`START_SECONDS` in `js/main.js`) to skip the intro
 - Beat sync uses estimated **75 BPM** (`BEAT_BPM` in `js/main.js`)
 
-### Photos
+### Photos (disabled by default)
 
-See [PHOTO-SUGGESTIONS.md](PHOTO-SUGGESTIONS.md) for professional shoot recommendations and technical specs.
+Photos are hidden until the client provides proper images. To re-enable in **~5 minutes**:
+
+1. Add photos to `assets/photos/` (see `PHOTO-SUGGESTIONS.md` and run `scripts/process_photos.py` if needed)
+2. Set `PHOTOS_ENABLED: true` in `js/config.js`
+3. In `index.html`, uncomment:
+   - Story photo block (`<!-- PHOTOS: ... story photo -->`)
+   - Gallery section + lightbox (`<!-- PHOTOS: ... gallery -->`)
+4. Restore couple `<div class="couple__photo">` blocks if desired (see git history)
+5. Update `og:image` to a couple or gallery image if preferred
+6. Deploy
+
+While disabled, `body.photos-disabled` hides gallery nav and photo elements via CSS + JS.
+
+See [PHOTO-SUGGESTIONS.md](PHOTO-SUGGESTIONS.md) for professional shoot recommendations.
 
 ## Local Development
 
@@ -96,7 +112,7 @@ Open http://localhost:8080 in your browser.
 
 Guest forms submit to **Supabase PostgreSQL** via the public anon key. An **admin dashboard** at `/admin/` lets the couple view reports after Supabase Auth login.
 
-**Full setup:** see [supabase/README.md](supabase/README.md)
+**Full setup:** see [scripts/setup-supabase.md](scripts/setup-supabase.md) (5 min) or [supabase/README.md](supabase/README.md)
 
 Quick checklist:
 
@@ -104,7 +120,7 @@ Quick checklist:
 2. Run `supabase/schema.sql` in the SQL Editor
 3. Paste **Project URL** and **anon key** into `js/config.js` and `admin/config.js`
 4. Create an admin user in Supabase Auth (Authentication → Users)
-5. Deploy — admin URL: https://acimdamero.github.io/erzal-dhea-wedding/admin/
+5. Deploy — admin URL: https://erzal-dhea-wedding.vercel.app/admin/
 
 Until keys are configured, forms run in **demo mode** (RSVP/wishes are not persisted).
 
@@ -118,7 +134,7 @@ Test on real devices before sharing with guests:
 | Music | Tap open → music may autoplay; if silent, tap music button | Usually autoplays after open gesture |
 | Scroll & nav | Horizontal nav scrolls; sections anchor correctly | Same |
 | RSVP inputs | No unwanted zoom on focus (16px inputs) | Same |
-| Gallery | 2-column grid; tap opens lightbox | Same |
+| Gallery | Hidden when `PHOTOS_ENABLED: false` | Same |
 | Share | Copy link + WhatsApp open correctly | WhatsApp intent works |
 
 **Share via WhatsApp:** Open the live URL on your phone, scroll to **Share Invitation**, tap **WhatsApp**, and send to yourself or a test contact to verify the Open Graph preview.
@@ -127,28 +143,27 @@ Test on real devices before sharing with guests:
 
 | URL | Role |
 |-----|------|
-| **https://acimdamero.github.io/erzal-dhea-wedding/** | **Primary — share this with guests** |
-| https://erzal-dhea-wedding.vercel.app/ | Optional (deploy with `npx vercel login` then `npx vercel --prod --yes`) |
+| **https://erzal-dhea-wedding.vercel.app/** | **Primary — share this with guests** |
+| https://acimdamero.github.io/erzal-dhea-wedding/ | Backup (GitHub Pages) |
 
 WhatsApp share message: `Wedding Invitation Erzal & Dhea` + link.
 
-> **Redirect note:** The old URL `https://acimdamero.github.io/wedding-invitation/` no longer works after the repo rename. Use the primary URL above.
+> See [DEPLOY.md](DEPLOY.md) for Vercel/Netlify one-command deploy.
 
 ## Deployment
 
 ### Vercel (primary URL)
 
 ```bash
-npx vercel --prod --yes
+npx vercel login          # once only
+npx vercel --prod --yes --name erzal-dhea-wedding
 ```
 
-First-time setup requires one login: `npx vercel login` (browser OAuth).
+Live: **https://erzal-dhea-wedding.vercel.app**
 
-Project name: `erzal-dhea-wedding` → `https://erzal-dhea-wedding.vercel.app`
+### GitHub Pages (backup)
 
-### GitHub Pages (primary)
-
-Live site: https://acimdamero.github.io/erzal-dhea-wedding/
+https://acimdamero.github.io/erzal-dhea-wedding/
 
 1. Push to `main` branch
 2. Settings → Pages → source: `main` / root

@@ -84,7 +84,7 @@ window.ADMIN_CONFIG = {
 
 Admin login URL after deploy:
 
-**https://acimdamero.github.io/erzal-dhea-wedding/admin/**
+**https://erzal-dhea-wedding.vercel.app/admin/**
 
 ## Step 6 — Test Locally
 
@@ -101,8 +101,9 @@ python3 -m http.server 8080
 
 Push to GitHub `main` branch. GitHub Pages serves both the invitation and admin:
 
-- Invitation: `https://acimdamero.github.io/erzal-dhea-wedding/`
-- Admin: `https://acimdamero.github.io/erzal-dhea-wedding/admin/`
+- Invitation: `https://erzal-dhea-wedding.vercel.app/`
+- Admin: `https://erzal-dhea-wedding.vercel.app/admin/`
+- Backup: `https://acimdamero.github.io/erzal-dhea-wedding/`
 
 ## Tables Reference
 
