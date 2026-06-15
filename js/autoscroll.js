@@ -1,7 +1,7 @@
 /**
  * AutoScrollEngine — cinematic section-by-section autonomous scroll.
  * Pauses on user interaction; syncs cadence with BeatEngine downbeats.
- * Click toggle = advance to next section; long-press = enable/disable.
+ * Click = scroll to next section; long-press = toggle autoscroll on/off.
  */
 (function (global) {
   'use strict';
@@ -43,11 +43,14 @@
       this.dwellStart = 0;
       this.dwellDuration = DEFAULT_SECTION_MS;
       this.cooldownRaf = null;
+      this._labelTimer = null;
+      this._lastLabelSecond = -1;
 
       this._onUserIntent = this._onUserIntent.bind(this);
       this._tick = this._tick.bind(this);
       this._onBeat = this._onBeat.bind(this);
       this._updateCooldownRing = this._updateCooldownRing.bind(this);
+      this._updateButtonStatus = this._updateButtonStatus.bind(this);
 
       this._buildUI();
       this._bindEvents();
@@ -66,30 +69,45 @@
       this.hint = document.createElement('div');
       this.hint.className = 'autoscroll-hint';
       this.hint.setAttribute('aria-live', 'polite');
-      this.hint.innerHTML = '<span>Gulir otomatis · Ketuk untuk lanjut</span>';
+      this.hint.innerHTML = '<span>Kembali ke atas…</span>';
       document.body.appendChild(this.hint);
+
+      this.controlWrap = document.createElement('div');
+      this.controlWrap.className = 'autoscroll-control';
 
       this.toggleBtn = document.createElement('button');
       this.toggleBtn.type = 'button';
+      this.toggleBtn.id = 'autoscrollToggle';
       this.toggleBtn.className = 'autoscroll-toggle';
       this.toggleBtn.setAttribute('aria-pressed', 'true');
-      this.toggleBtn.setAttribute('aria-label', 'Lanjut ke bagian berikutnya');
+      this.toggleBtn.setAttribute('aria-label', 'Gulir ke bagian berikutnya');
       this.toggleBtn.innerHTML = `
-        <svg class="autoscroll-toggle__ring" viewBox="0 0 44 44" aria-hidden="true">
-          <circle class="autoscroll-toggle__ring-bg" cx="22" cy="22" r="19"></circle>
-          <circle class="autoscroll-toggle__ring-progress" cx="22" cy="22" r="19"></circle>
+        <svg class="autoscroll-toggle__ring" viewBox="0 0 48 48" aria-hidden="true">
+          <circle class="autoscroll-toggle__ring-bg" cx="24" cy="24" r="20"></circle>
+          <circle class="autoscroll-toggle__ring-progress" cx="24" cy="24" r="20"></circle>
         </svg>
-        <i class="fa-solid fa-film" aria-hidden="true"></i>
+        <span class="autoscroll-toggle__icon" aria-hidden="true">
+          <i class="fa-solid fa-chevron-down"></i>
+        </span>
       `;
-      document.body.appendChild(this.toggleBtn);
+      this.controlWrap.appendChild(this.toggleBtn);
+
+      this.statusLabel = document.createElement('span');
+      this.statusLabel.className = 'autoscroll-toggle__status';
+      this.statusLabel.setAttribute('aria-live', 'polite');
+      this.statusLabel.textContent = 'Gulir ke bawah';
+      this.controlWrap.appendChild(this.statusLabel);
+
+      document.body.appendChild(this.controlWrap);
 
       this.ringProgress = this.toggleBtn.querySelector('.autoscroll-toggle__ring-progress');
-      const circumference = 2 * Math.PI * 19;
+      const circumference = 2 * Math.PI * 20;
       this.ringProgress.style.strokeDasharray = `${circumference}`;
       this.ringProgress.style.strokeDashoffset = `${circumference}`;
       this._ringCircumference = circumference;
 
       this._bindToggleGestures();
+      this._updateButtonStatus();
     }
 
     _bindToggleGestures() {
@@ -109,9 +127,6 @@
         pressTimer = setTimeout(() => {
           longPressFired = true;
           this.setEnabled(!this.enabled);
-          this.hint.querySelector('span').textContent = this.enabled
-            ? 'Gulir otomatis · Ketuk untuk lanjut'
-            : 'Gulir otomatis dimatikan · Tahan untuk nyalakan';
         }, LONG_PRESS_MS);
       });
 
@@ -154,8 +169,7 @@
       this.paused = true;
       this._cancelScrollAnim();
       this._stopCooldownRing();
-      this.hint.classList.add('autoscroll-hint--visible', 'autoscroll-hint--paused');
-      this.hint.querySelector('span').textContent = 'Dijeda · Gulir otomatis lanjut sebentar lagi';
+      this._updateButtonStatus();
 
       if (this.beatEngine) this.beatEngine.setAutoScrollPaused(true);
 
@@ -163,10 +177,9 @@
       this._resumeTimer = setTimeout(() => {
         if (this.enabled && !this.reducedMotion) {
           this.paused = false;
-          this.hint.classList.remove('autoscroll-hint--paused');
-          this.hint.querySelector('span').textContent = 'Gulir otomatis · Ketuk untuk lanjut';
           if (this.beatEngine) this.beatEngine.setAutoScrollPaused(false);
           this._scheduleNextSection();
+          this._updateButtonStatus();
         }
       }, USER_PAUSE_MS);
     }
@@ -205,18 +218,79 @@
         this.currentIndex = 0;
         const startDelay = options.startDelay ?? 500;
         setTimeout(() => this._scheduleNextSection(), startDelay);
-        this.hint.classList.add('autoscroll-hint--visible');
         this.toggleBtn.classList.add('autoscroll-toggle--active');
+        this._updateButtonStatus();
+      }
+    }
+
+    getCooldownRemainingSeconds() {
+      if (!this.enabled || this.paused || this.reducedMotion || this.isScrolling) return null;
+      if (!this.dwellStart || !this.dwellDuration) return null;
+      const elapsed = performance.now() - this.dwellStart;
+      return Math.max(0, Math.ceil((this.dwellDuration - elapsed) / 1000));
+    }
+
+    _updateButtonStatus() {
+      if (!this.statusLabel || !this.toggleBtn) return;
+
+      const remaining = this.getCooldownRemainingSeconds();
+      let desktopText = 'Gulir ke bawah';
+      let mobileText = 'Gulir ke bawah';
+      let ariaLabel = 'Gulir ke bagian berikutnya, ketuk untuk lanjut sekarang';
+      let state = 'ready';
+
+      if (this.isScrolling) {
+        desktopText = 'Menggulir…';
+        mobileText = '…';
+        ariaLabel = 'Sedang menggulir ke bagian berikutnya';
+        state = 'scrolling';
+      } else if (this.paused) {
+        desktopText = 'Dijeda · Ketuk untuk lanjut';
+        mobileText = 'Dijeda';
+        ariaLabel = 'Gulir dijeda, ketuk untuk lanjut ke bagian berikutnya';
+        state = 'paused';
+      } else if (!this.enabled) {
+        desktopText = 'Gulir ke bawah';
+        mobileText = 'Gulir';
+        ariaLabel = 'Gulir ke bagian berikutnya. Tahan tombol untuk menyalakan gulir otomatis';
+        state = 'disabled';
+      } else if (remaining !== null && remaining > 0) {
+        desktopText = `Lanjut dalam ${remaining}s…`;
+        mobileText = `${remaining}s…`;
+        ariaLabel = `Gulir ke bagian berikutnya, lanjut otomatis dalam ${remaining} detik`;
+        state = 'cooldown';
+      }
+
+      const text = this.isMobile ? mobileText : desktopText;
+      if (this._lastLabelSecond !== remaining || this.statusLabel.textContent !== text) {
+        this.statusLabel.textContent = text;
+        this._lastLabelSecond = remaining;
+      }
+
+      this.toggleBtn.setAttribute('aria-label', ariaLabel);
+      this.toggleBtn.classList.toggle('autoscroll-toggle--ready', state === 'ready');
+      this.toggleBtn.classList.toggle('autoscroll-toggle--cooldown', state === 'cooldown');
+      this.controlWrap.classList.toggle('autoscroll-control--paused', state === 'paused');
+      this.controlWrap.classList.toggle('autoscroll-control--cooldown', state === 'cooldown');
+    }
+
+    _startLabelTimer() {
+      this._stopLabelTimer();
+      this._labelTimer = setInterval(() => {
+        this._updateButtonStatus();
+      }, 1000);
+    }
+
+    _stopLabelTimer() {
+      if (this._labelTimer) {
+        clearInterval(this._labelTimer);
+        this._labelTimer = null;
       }
     }
 
     setEnabled(on, silent = false) {
       this.enabled = on && !this.reducedMotion;
       this.toggleBtn.setAttribute('aria-pressed', String(this.enabled));
-      this.toggleBtn.setAttribute(
-        'aria-label',
-        this.enabled ? 'Lanjut ke bagian berikutnya' : 'Gulir otomatis dimatikan — tahan untuk nyalakan'
-      );
       document.body.classList.toggle('autoscroll-active', this.enabled);
       document.documentElement.classList.toggle('autoscroll-active', this.enabled);
 
@@ -225,21 +299,22 @@
 
       if (!this.enabled) {
         this._stopCooldownRing();
+        this._stopLabelTimer();
         this._setRingProgress(0);
+      } else {
+        this._startLabelTimer();
       }
 
       if (!silent) {
         if (this.enabled) {
           this.paused = false;
           this._scheduleNextSection();
-          this.hint.classList.add('autoscroll-hint--visible');
-          this.hint.querySelector('span').textContent = 'Gulir otomatis · Ketuk untuk lanjut';
         } else {
           this._cancelScrollAnim();
-          this.hint.classList.remove('autoscroll-hint--visible');
         }
       }
 
+      this._updateButtonStatus();
       if (this.beatEngine) this.beatEngine.setAutoScrollPaused(!this.enabled || this.paused);
     }
 
@@ -249,9 +324,10 @@
       if (this.paused) {
         this.paused = false;
         this.userPausedUntil = 0;
-        this.hint.classList.remove('autoscroll-hint--paused');
         if (this.beatEngine) this.beatEngine.setAutoScrollPaused(false);
       }
+
+      this._updateButtonStatus();
 
       if (!this.enabled) {
         this.setEnabled(true);
@@ -305,7 +381,10 @@
       const wait = this._getDwellForSection(section);
       this.dwellDuration = wait;
       this.dwellStart = performance.now();
+      this._lastLabelSecond = -1;
       this._startCooldownRing();
+      this._startLabelTimer();
+      this._updateButtonStatus();
 
       clearTimeout(this._sectionTimer);
       this._sectionTimer = setTimeout(() => {
@@ -339,15 +418,19 @@
     _updateCooldownRing() {
       if (!this.enabled || this.paused) {
         this._setRingProgress(0);
+        this._updateButtonStatus();
         return;
       }
 
       const elapsed = performance.now() - this.dwellStart;
       const progress = Math.min(1, elapsed / this.dwellDuration);
       this._setRingProgress(progress);
+      this._updateButtonStatus();
 
       if (progress < 1) {
         this.cooldownRaf = requestAnimationFrame(this._updateCooldownRing);
+      } else {
+        this.toggleBtn.classList.add('autoscroll-toggle--ready');
       }
     }
 
@@ -383,6 +466,7 @@
 
       this.isScrolling = true;
       this._setTransitioning(true);
+      this._updateButtonStatus();
       if (this.beatEngine) this.beatEngine.setAutoScrollPaused(true);
 
       const speedFactor = this.isMobile ? 1.6 : 0.85;
@@ -400,6 +484,7 @@
           this.beatEngine.setAutoScrollPaused(false);
         }
         window.scrollTo({ top: targetY, behavior: 'instant' });
+        this._updateButtonStatus();
         if (onComplete) onComplete();
       };
 

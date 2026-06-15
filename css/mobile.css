@@ -55,6 +55,7 @@ a.btn,
 
 .music-control__btn,
 .autoscroll-toggle,
+.autoscroll-control,
 .lightbox__close,
 .lightbox__nav {
   min-width: var(--tap-min);
@@ -189,9 +190,14 @@ a.btn,
   right: calc(1rem + var(--safe-right));
 }
 
-.autoscroll-toggle {
+.autoscroll-control {
   bottom: calc(1rem + var(--safe-bottom));
   left: calc(1rem + var(--safe-left));
+}
+
+.autoscroll-toggle {
+  bottom: auto;
+  left: auto;
 }
 
 .autoscroll-hint {
@@ -395,7 +401,7 @@ a.btn,
 
   /* iOS fixed-position compositing */
   .music-control,
-  .autoscroll-toggle,
+  .autoscroll-control,
   .nav,
   .cover,
   .lightbox {

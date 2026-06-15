@@ -274,14 +274,61 @@ body.autoscroll-transitioning .autoscroll-progress__fill {
   border-color: var(--color-primary);
 }
 
-/* Autoscroll toggle */
-.autoscroll-toggle {
+/* Autoscroll control — scroll-down FAB + cooldown label */
+.autoscroll-control {
   position: fixed;
   bottom: 1.5rem;
   left: 1.5rem;
   z-index: 900;
-  width: 44px;
-  height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+body.invite-open .autoscroll-control {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.autoscroll-toggle__status {
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--color-bg-dark);
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(10px);
+  padding: 0.4rem 0.85rem;
+  border-radius: 20px;
+  border: 1px solid var(--color-glass-border);
+  box-shadow: var(--shadow-soft);
+  white-space: nowrap;
+  max-width: min(220px, 52vw);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: border-color 0.25s ease, color 0.25s ease;
+}
+
+.autoscroll-control--cooldown .autoscroll-toggle__status {
+  border-color: rgba(196, 168, 130, 0.55);
+  color: var(--color-primary-dark);
+}
+
+.autoscroll-control--paused .autoscroll-toggle__status {
+  border-color: var(--color-primary);
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
+/* Autoscroll toggle */
+.autoscroll-toggle {
+  position: relative;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
   border-radius: 50%;
   background: var(--color-glass);
   backdrop-filter: blur(12px);
@@ -293,8 +340,6 @@ body.autoscroll-transitioning .autoscroll-progress__fill {
   justify-content: center;
   box-shadow: var(--shadow-soft);
   transition: var(--transition);
-  opacity: 0;
-  pointer-events: none;
   padding: 0;
 }
 
@@ -309,26 +354,36 @@ body.autoscroll-transitioning .autoscroll-progress__fill {
 
 .autoscroll-toggle__ring-bg {
   fill: none;
-  stroke: rgba(196, 168, 130, 0.2);
-  stroke-width: 2.5;
+  stroke: rgba(196, 168, 130, 0.28);
+  stroke-width: 3;
 }
 
 .autoscroll-toggle__ring-progress {
   fill: none;
-  stroke: var(--color-accent-light);
-  stroke-width: 2.5;
+  stroke: var(--color-accent);
+  stroke-width: 3;
   stroke-linecap: round;
+  filter: drop-shadow(0 0 3px rgba(196, 168, 130, 0.65));
   transition: stroke-dashoffset 0.05s linear;
 }
 
 .autoscroll-toggle--disabled .autoscroll-toggle__ring-progress {
-  stroke: rgba(139, 154, 126, 0.35);
-  opacity: 0.5;
+  stroke: rgba(139, 154, 126, 0.4);
+  filter: none;
+  opacity: 0.55;
+}
+
+.autoscroll-toggle__icon {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 body.invite-open .autoscroll-toggle {
   opacity: 1;
-  pointer-events: auto;
 }
 
 .autoscroll-toggle:hover {
@@ -349,20 +404,23 @@ body.invite-open .autoscroll-toggle {
 .autoscroll-toggle--active {
   background: var(--color-primary);
   color: var(--color-white);
-  box-shadow: 0 0 0 2px rgba(139, 154, 126, 0.35);
+  box-shadow:
+    0 0 0 2px rgba(139, 154, 126, 0.35),
+    0 4px 16px rgba(44, 51, 40, 0.18);
 }
 
-.autoscroll-toggle--active i {
-  animation: autoscroll-film-pulse 2.5s ease-in-out infinite;
+.autoscroll-toggle--ready .autoscroll-toggle__icon {
+  animation: autoscroll-chevron-bounce 1.8s ease-in-out infinite;
 }
 
-@keyframes autoscroll-film-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.85; transform: scale(1.08); }
+.autoscroll-toggle--cooldown .autoscroll-toggle__icon {
+  animation: none;
+  opacity: 0.92;
 }
 
-.autoscroll-toggle[aria-pressed="false"] i::before {
-  content: '\f04c';
+@keyframes autoscroll-chevron-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(3px); }
 }
 
 /* Countdown flip perspective */
@@ -434,13 +492,25 @@ body.invite-open .autoscroll-toggle {
     text-align: center;
   }
 
-  .autoscroll-toggle {
+  .autoscroll-control {
     bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
     left: calc(1rem + env(safe-area-inset-left, 0px));
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+
+  .autoscroll-toggle {
     width: 48px;
     height: 48px;
     min-width: 48px;
     min-height: 48px;
+  }
+
+  .autoscroll-toggle__status {
+    font-size: 0.65rem;
+    padding: 0.3rem 0.65rem;
+    max-width: 88px;
   }
 
   .music-control__btn {
@@ -460,7 +530,7 @@ body.invite-open .autoscroll-toggle {
   .floating-petals,
   .autoscroll-progress,
   .autoscroll-hint,
-  .autoscroll-toggle {
+  .autoscroll-control {
     display: none !important;
   }
 
