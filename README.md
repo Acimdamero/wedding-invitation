@@ -133,6 +133,10 @@ Test on real devices before sharing with guests:
 
 **Share via WhatsApp:** Open the live URL on your phone, scroll to **Share Invitation**, tap **WhatsApp**, and send to yourself or a test contact to verify the Open Graph preview.
 
+**OG preview image:** `assets/og-invite.jpg` (1200×630) — cream envelope card on muted Masjidil Haram background. Regenerate with `python3 scripts/generate-og-image.py`.
+
+**WhatsApp / Facebook cache:** Link previews can keep the old image for 24–48 hours. To force a refresh after deploying a new OG image, use [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/) (also used by WhatsApp) — paste `https://erzal-dhea-wedding.vercel.app/` and click **Scrape Again**. Bump the `?v=` query on `og:image` in `index.html` when you change the asset.
+
 ## Live URLs
 
 | URL | Role |
