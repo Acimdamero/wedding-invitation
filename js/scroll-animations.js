@@ -128,22 +128,35 @@
       });
     });
 
-    // Couple cards slide from sides
-    const coupleCards = document.querySelectorAll('.couple__card');
+    // Couple cards slide from sides (opacity handled in CSS — avoid invisible text on glass)
+    const coupleCards = document.querySelectorAll('#couple .couple__card');
+    const markCoupleVisible = () => {
+      coupleCards.forEach((card) => card.classList.add('visible'));
+    };
     if (coupleCards[0]) {
       gsap.from(coupleCards[0], {
-        scrollTrigger: { trigger: '#couple', start: 'top 70%' },
+        scrollTrigger: {
+          trigger: '#couple',
+          start: 'top 70%',
+          onEnter: markCoupleVisible,
+          onEnterBack: markCoupleVisible,
+        },
         x: -80,
-        opacity: 0,
+        opacity: 1,
         duration: 1,
         ease: 'power3.out',
       });
     }
     if (coupleCards[1]) {
       gsap.from(coupleCards[1], {
-        scrollTrigger: { trigger: '#couple', start: 'top 70%' },
+        scrollTrigger: {
+          trigger: '#couple',
+          start: 'top 70%',
+          onEnter: markCoupleVisible,
+          onEnterBack: markCoupleVisible,
+        },
         x: 80,
-        opacity: 0,
+        opacity: 1,
         duration: 1,
         ease: 'power3.out',
       });
