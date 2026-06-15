@@ -142,10 +142,13 @@ a.btn,
 
   .couple__card--text {
     padding: 2rem 1.25rem;
+    overflow: visible;
   }
 
   .couple__frame {
     width: min(120px, 40%);
+    opacity: 0.35;
+    top: -10px;
   }
 
   .ornament--corner img {
@@ -268,6 +271,16 @@ a.btn,
 
   .couple__name {
     font-size: clamp(1.35rem, 5vw, 1.75rem);
+    line-height: 1.25;
+  }
+
+  .couple__role {
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+  }
+
+  .couple__parents {
+    font-size: 0.8rem;
   }
 
   .story__photo {

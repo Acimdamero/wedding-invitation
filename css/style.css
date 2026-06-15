@@ -744,6 +744,8 @@ button {
   text-align: center;
   padding: 2rem 1.5rem;
   position: relative;
+  z-index: 2;
+  overflow: visible;
 }
 
 .couple__card--text {
@@ -757,8 +759,9 @@ button {
   left: 50%;
   transform: translateX(-50%);
   width: min(160px, 50%);
-  opacity: 0.55;
+  opacity: 0.4;
   pointer-events: none;
+  z-index: 0;
 }
 
 .couple__frame img {
@@ -766,11 +769,20 @@ button {
   height: auto;
 }
 
+.couple__role,
+.couple__name,
+.couple__parents,
+.couple__social {
+  position: relative;
+  z-index: 3;
+}
+
 .couple__role {
   font-size: 0.7rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--color-primary);
+  color: var(--color-primary-dark);
+  font-weight: 600;
   margin-bottom: 0.5rem;
 }
 
@@ -815,9 +827,14 @@ button {
 
 .couple__parents {
   font-size: 0.85rem;
-  color: var(--color-text-light);
+  color: var(--color-text);
   line-height: 1.6;
   margin-bottom: 1rem;
+}
+
+.couple__parents strong {
+  color: var(--color-bg-dark);
+  font-weight: 600;
 }
 
 .couple__social a {
@@ -1588,15 +1605,22 @@ body.no-webgl .ornaments-fallback {
 
 .section--makkah .couple__card--text {
   border: 2px solid var(--color-accent);
+  background: rgba(255, 255, 255, 0.75);
   box-shadow:
     inset 0 0 0 1px rgba(232, 213, 181, 0.45),
     0 8px 32px rgba(44, 51, 40, 0.15);
 }
 
 .section--makkah .couple__card--text .couple__frame {
-  opacity: 0.85;
-  width: min(180px, 55%);
-  top: -18px;
+  opacity: 0.4;
+  width: min(150px, 48%);
+  top: -14px;
+  z-index: 0;
+}
+
+#couple {
+  position: relative;
+  z-index: 2;
 }
 
 /* Reveal + GSAP both set opacity:0 — keep mempelai cards always visible */
@@ -1819,7 +1843,7 @@ body.beat-pulse .card-3d {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 50;
+  z-index: 0;
   overflow: hidden;
 }
 
