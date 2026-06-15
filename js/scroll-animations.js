@@ -295,7 +295,8 @@
     if (storyPinTrigger) {
       const syncStoryPin = () => {
         const autoscrollOn = document.body.classList.contains('autoscroll-active');
-        if (autoscrollOn) {
+        const transitioning = document.body.classList.contains('autoscroll-transitioning');
+        if (autoscrollOn || transitioning) {
           storyPinTrigger.disable(false, false);
         } else {
           storyPinTrigger.enable(false, false);
@@ -303,6 +304,7 @@
       };
       syncStoryPin();
       window.addEventListener('autoscroll:transition-start', syncStoryPin);
+      window.addEventListener('autoscroll:transition-end', syncStoryPin);
       const bodyObserver = new MutationObserver(syncStoryPin);
       bodyObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
     }

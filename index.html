@@ -115,7 +115,8 @@
       <a href="#story" class="nav__link">Kisah</a>
       <!-- EVENTS: uncomment to restore nav link -->
       <!-- <a href="#events" class="nav__link">Acara</a> -->
-      <a href="#story" class="nav__link">Foto</a>
+      <!-- PHOTOS: uncomment when gallery section is restored -->
+      <!-- <a href="#gallery" class="nav__link nav__link--photos">Foto</a> -->
       <a href="#rsvp" class="nav__link">RSVP</a>
       <a href="#wishes" class="nav__link">Ucapan</a>
       <a href="#location" class="nav__link">Lokasi</a>
@@ -225,13 +226,15 @@
           <span class="section-divider" aria-hidden="true"></span>
           <p class="section-desc">Setiap bab dalam kisah kami penuh makna dan berkah.</p>
         </div>
-        <figure class="story__photo reveal">
-          <figcaption class="story__photo-caption">Awal Kisah / Our Beginning</figcaption>
-          <button type="button" class="story__photo-btn" aria-label="Perbesar foto kenangan masa kecil">
-            <img src="assets/photos/childhood.jpg" alt="Erzal dan Dhea — kenangan masa kecil" loading="lazy">
-          </button>
-        </figure>
-        <div class="timeline">
+        <div data-scroll-target="story-photo">
+          <figure class="story__photo reveal">
+            <figcaption class="story__photo-caption">Awal Kisah / Our Beginning</figcaption>
+            <button type="button" class="story__photo-btn" aria-label="Perbesar foto kenangan masa kecil">
+              <img src="assets/photos/childhood.jpg" alt="Erzal dan Dhea — kenangan masa kecil" loading="lazy">
+            </button>
+          </figure>
+        </div>
+        <div class="timeline" data-scroll-target="story-timeline">
           <article class="timeline__item reveal">
             <div class="timeline__dot" aria-hidden="true"></div>
             <div class="timeline__content glass">

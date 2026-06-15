@@ -10,19 +10,23 @@
   const PAUSE_SECTION_MS = 5500;
   const USER_PAUSE_MS = 9000;
   const LONG_PRESS_MS = 550;
-  const EASE_OUT = (t) => 1 - Math.pow(1 - t, 3);
+  const EASE_IN_OUT_CUBIC = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
   const SECTION_DWELL = {
     hero: 5000,
     countdown: 4500,
     couple: 4000,
     story: 5500,
+    'story-photo': 5000,
+    'story-timeline': 7000,
     gallery: 4000,
     rsvp: 5000,
     wishes: 3500,
     location: 4000,
     share: 3000,
   };
+
+  const MAIN_SECTION_IDS = ['hero', 'countdown', 'couple', 'story', 'gallery', 'rsvp', 'wishes', 'location', 'share'];
 
   class AutoScrollEngine {
     constructor(options = {}) {
@@ -183,11 +187,28 @@
       }, USER_PAUSE_MS);
     }
 
+    _makeStop(element, stopId) {
+      return { element, stopId };
+    }
+
     _collectSections() {
-      const ids = ['hero', 'countdown', 'couple', 'story', 'gallery', 'rsvp', 'wishes', 'location', 'share'];
-      this.sections = ids
-        .map((id) => document.getElementById(id))
-        .filter(Boolean);
+      this.sections = [];
+
+      MAIN_SECTION_IDS.forEach((id) => {
+        const section = document.getElementById(id);
+        if (!section) return;
+
+        if (id === 'story') {
+          this.sections.push(this._makeStop(section, 'story'));
+          const photo = section.querySelector('[data-scroll-target="story-photo"]');
+          const timeline = section.querySelector('[data-scroll-target="story-timeline"]');
+          if (photo) this.sections.push(this._makeStop(photo, 'story-photo'));
+          if (timeline) this.sections.push(this._makeStop(timeline, 'story-timeline'));
+          return;
+        }
+
+        this.sections.push(this._makeStop(section, id));
+      });
     }
 
     connectBeatEngine(beatEngine) {
@@ -335,49 +356,89 @@
       clearTimeout(this._sectionTimer);
       this._cancelScrollAnim();
 
-      this.currentIndex = this._indexFromScroll();
-      this.currentIndex = Math.min(this.currentIndex + 1, this.sections.length - 1);
+      const fromIndex = this._indexFromScroll();
+      const fromStopId = this.sections[fromIndex]?.stopId ?? null;
+      this.currentIndex = Math.min(fromIndex + 1, this.sections.length - 1);
 
-      const section = this.sections[this.currentIndex];
-      if (!section) return;
+      const stop = this.sections[this.currentIndex];
+      if (!stop) return;
 
-      this._scrollToSection(section, () => {
+      this._scrollToStop(stop, () => {
         this._updateProgress();
-        this._startDwellTimer(section);
-      });
+        this._startDwellTimer(stop);
+      }, { fromStopId });
+    }
+
+    _getNavHeight() {
+      return parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-height'), 10) || 56;
     }
 
     _indexFromScroll() {
-      const scrollY = window.scrollY + (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-height'), 10) || 56) + 40;
+      const navHeight = this._getNavHeight();
+      const scrollY = window.scrollY + navHeight + 40;
       let idx = 0;
-      this.sections.forEach((sec, i) => {
-        if (sec.offsetTop <= scrollY) idx = i;
+      this.sections.forEach((stop, i) => {
+        const top = this._getStopScrollY(stop) - navHeight;
+        if (top <= scrollY) idx = i;
       });
       return idx;
     }
 
-    _getDwellForSection(section) {
-      const id = section.id;
-      const dwell = SECTION_DWELL[id] ?? DEFAULT_SECTION_MS;
-      const isPauseSection = ['countdown', 'story', 'rsvp'].includes(id);
-      return isPauseSection ? PAUSE_SECTION_MS : dwell;
+    _getStopScrollY(stop) {
+      const navHeight = this._getNavHeight();
+      const el = stop.element;
+      const rect = el.getBoundingClientRect();
+
+      if (stop.stopId === 'story-timeline') {
+        const viewport = window.innerHeight - navHeight;
+        const visibleHeight = Math.min(rect.height, viewport * 0.75);
+        const offset = Math.max(24, (viewport - visibleHeight) * 0.35);
+        return rect.top + window.scrollY - navHeight - offset;
+      }
+
+      if (stop.stopId === 'story-photo') {
+        return rect.top + window.scrollY - navHeight - 16;
+      }
+
+      return rect.top + window.scrollY - navHeight;
+    }
+
+    _getDwellForStop(stopId) {
+      const dwell = SECTION_DWELL[stopId] ?? DEFAULT_SECTION_MS;
+      const isPauseSection = ['countdown', 'story', 'story-photo', 'story-timeline', 'rsvp'].includes(stopId);
+      if (stopId === 'story-timeline') return dwell;
+      return isPauseSection ? Math.max(dwell, PAUSE_SECTION_MS) : dwell;
+    }
+
+    _getScrollDuration(distance, fromStopId) {
+      if (fromStopId === 'story-timeline') {
+        return this.isMobile ? 3000 : 3500;
+      }
+
+      const minDuration = this.isMobile ? 2000 : 2500;
+      const maxDuration = this.isMobile ? 3000 : 4000;
+      const vhTravel = Math.abs(distance) / Math.max(window.innerHeight, 1);
+      const scaled = minDuration + vhTravel * (this.isMobile ? 400 : 500);
+      return Math.min(maxDuration, Math.max(minDuration, scaled));
     }
 
     _scheduleNextSection() {
       if (!this.enabled || this.paused || this.reducedMotion) return;
 
       clearTimeout(this._sectionTimer);
-      const section = this.sections[this.currentIndex];
-      if (!section) return;
+      const stop = this.sections[this.currentIndex];
+      if (!stop) return;
 
-      this._scrollToSection(section, () => {
+      const fromStopId = this.currentIndex > 0 ? this.sections[this.currentIndex - 1].stopId : null;
+
+      this._scrollToStop(stop, () => {
         this._updateProgress();
-        this._startDwellTimer(section);
-      });
+        this._startDwellTimer(stop);
+      }, { fromStopId });
     }
 
-    _startDwellTimer(section) {
-      const wait = this._getDwellForSection(section);
+    _startDwellTimer(stop) {
+      const wait = this._getDwellForStop(stop.stopId);
       this.dwellDuration = wait;
       this.dwellStart = performance.now();
       this._lastLabelSecond = -1;
@@ -449,14 +510,14 @@
       window.dispatchEvent(new CustomEvent(active ? 'autoscroll:transition-start' : 'autoscroll:transition-end'));
     }
 
-    _scrollToSection(section, onComplete) {
+    _scrollToStop(stop, onComplete, options = {}) {
       if (this.isScrolling) return;
       this._cancelScrollAnim();
 
-      const navHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-height'), 10) || 56;
-      const targetY = section.getBoundingClientRect().top + window.scrollY - navHeight;
+      const targetY = this._getStopScrollY(stop);
       const startY = window.scrollY;
       const distance = targetY - startY;
+      const fromStopId = options.fromStopId ?? null;
 
       if (Math.abs(distance) < 8) {
         if (onComplete) onComplete();
@@ -468,10 +529,7 @@
       this._updateButtonStatus();
       if (this.beatEngine) this.beatEngine.setAutoScrollPaused(true);
 
-      const speedFactor = this.isMobile ? 1.6 : 0.85;
-      const maxDuration = this.isMobile ? 3400 : 3200;
-      const minDuration = this.isMobile ? 1800 : 1800;
-      const duration = Math.min(maxDuration, Math.max(minDuration, Math.abs(distance) * speedFactor));
+      const duration = this._getScrollDuration(distance, fromStopId);
       const startTime = performance.now();
       let lastAppliedY = startY;
 
@@ -490,7 +548,7 @@
       const step = (now) => {
         const elapsed = now - startTime;
         const progress = Math.min(1, elapsed / duration);
-        const eased = EASE_OUT(progress);
+        const eased = EASE_IN_OUT_CUBIC(progress);
         const nextY = Math.round(startY + distance * eased);
 
         if (nextY !== lastAppliedY) {
