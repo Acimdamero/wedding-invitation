@@ -162,10 +162,14 @@
       });
     }
 
-    // Love story — pin timeline on desktop
+    // Love story — pin timeline on desktop; keep items visible (no opacity:0 trap)
     const storySection = document.getElementById('story');
     const timelineItems = document.querySelectorAll('.timeline__item');
     const timelineLine = document.querySelector('.timeline');
+
+    const markTimelineVisible = () => {
+      timelineItems.forEach((item) => item.classList.add('visible'));
+    };
 
     if (storySection && timelineItems.length && !isMobile) {
       timelineItems.forEach((item, i) => {
@@ -174,8 +178,10 @@
             trigger: item,
             start: 'top 85%',
             toggleActions: 'play none none reverse',
+            onEnter: markTimelineVisible,
+            onEnterBack: markTimelineVisible,
           },
-          opacity: 0,
+          opacity: 1,
           x: -40,
           duration: 0.7,
           delay: i * 0.05,
@@ -197,8 +203,13 @@
     } else {
       timelineItems.forEach((item, i) => {
         gsap.from(item, {
-          scrollTrigger: { trigger: item, start: 'top 90%' },
-          opacity: 0,
+          scrollTrigger: {
+            trigger: item,
+            start: 'top 90%',
+            onEnter: markTimelineVisible,
+            onEnterBack: markTimelineVisible,
+          },
+          opacity: 1,
           y: 40,
           duration: 0.7,
           delay: i * 0.1,

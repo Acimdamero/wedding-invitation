@@ -1,6 +1,7 @@
 /**
  * AutoScrollEngine — cinematic section-by-section autonomous scroll.
  * Pauses on user interaction; syncs cadence with BeatEngine downbeats.
+ * Click toggle = advance to next section; long-press = enable/disable.
  */
 (function (global) {
   'use strict';
@@ -8,6 +9,7 @@
   const DEFAULT_SECTION_MS = 4000;
   const PAUSE_SECTION_MS = 5500;
   const USER_PAUSE_MS = 9000;
+  const LONG_PRESS_MS = 550;
   const EASE = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
   const SECTION_DWELL = {
@@ -39,9 +41,14 @@
       this.loopAtEnd = true;
       this.onBeatMultiplier = 1;
 
+      this.dwellStart = 0;
+      this.dwellDuration = DEFAULT_SECTION_MS;
+      this.cooldownRaf = null;
+
       this._onUserIntent = this._onUserIntent.bind(this);
       this._tick = this._tick.bind(this);
       this._onBeat = this._onBeat.bind(this);
+      this._updateCooldownRing = this._updateCooldownRing.bind(this);
 
       this._buildUI();
       this._bindEvents();
@@ -60,21 +67,65 @@
       this.hint = document.createElement('div');
       this.hint.className = 'autoscroll-hint';
       this.hint.setAttribute('aria-live', 'polite');
-      this.hint.innerHTML = '<span>Gulir otomatis · Ketuk untuk jeda</span>';
+      this.hint.innerHTML = '<span>Gulir otomatis · Ketuk untuk lanjut</span>';
       document.body.appendChild(this.hint);
 
       this.toggleBtn = document.createElement('button');
       this.toggleBtn.type = 'button';
       this.toggleBtn.className = 'autoscroll-toggle';
       this.toggleBtn.setAttribute('aria-pressed', 'true');
-      this.toggleBtn.setAttribute('aria-label', 'Matikan gulir otomatis');
-      this.toggleBtn.innerHTML = '<i class="fa-solid fa-film" aria-hidden="true"></i>';
+      this.toggleBtn.setAttribute('aria-label', 'Lanjut ke bagian berikutnya');
+      this.toggleBtn.innerHTML = `
+        <svg class="autoscroll-toggle__ring" viewBox="0 0 44 44" aria-hidden="true">
+          <circle class="autoscroll-toggle__ring-bg" cx="22" cy="22" r="19"></circle>
+          <circle class="autoscroll-toggle__ring-progress" cx="22" cy="22" r="19"></circle>
+        </svg>
+        <i class="fa-solid fa-film" aria-hidden="true"></i>
+      `;
       document.body.appendChild(this.toggleBtn);
 
-      this.toggleBtn.addEventListener('click', (e) => {
+      this.ringProgress = this.toggleBtn.querySelector('.autoscroll-toggle__ring-progress');
+      const circumference = 2 * Math.PI * 19;
+      this.ringProgress.style.strokeDasharray = `${circumference}`;
+      this.ringProgress.style.strokeDashoffset = `${circumference}`;
+      this._ringCircumference = circumference;
+
+      this._bindToggleGestures();
+    }
+
+    _bindToggleGestures() {
+      let pressTimer = null;
+      let longPressFired = false;
+
+      const clearPress = () => {
+        if (pressTimer) {
+          clearTimeout(pressTimer);
+          pressTimer = null;
+        }
+      };
+
+      this.toggleBtn.addEventListener('pointerdown', (e) => {
         e.stopPropagation();
-        this.setEnabled(!this.enabled);
+        longPressFired = false;
+        pressTimer = setTimeout(() => {
+          longPressFired = true;
+          this.setEnabled(!this.enabled);
+          this.hint.querySelector('span').textContent = this.enabled
+            ? 'Gulir otomatis · Ketuk untuk lanjut'
+            : 'Gulir otomatis dimatikan · Tahan untuk nyalakan';
+        }, LONG_PRESS_MS);
       });
+
+      this.toggleBtn.addEventListener('pointerup', (e) => {
+        e.stopPropagation();
+        clearPress();
+        if (!longPressFired) {
+          this.advanceToNext();
+        }
+      });
+
+      this.toggleBtn.addEventListener('pointerleave', clearPress);
+      this.toggleBtn.addEventListener('pointercancel', clearPress);
     }
 
     _bindEvents() {
@@ -103,6 +154,7 @@
       this.userPausedUntil = Date.now() + USER_PAUSE_MS;
       this.paused = true;
       this._cancelScrollAnim();
+      this._stopCooldownRing();
       this.hint.classList.add('autoscroll-hint--visible', 'autoscroll-hint--paused');
       this.hint.querySelector('span').textContent = 'Dijeda · Gulir otomatis lanjut sebentar lagi';
 
@@ -113,7 +165,7 @@
         if (this.enabled && !this.reducedMotion) {
           this.paused = false;
           this.hint.classList.remove('autoscroll-hint--paused');
-          this.hint.querySelector('span').textContent = 'Gulir otomatis · Ketuk untuk jeda';
+          this.hint.querySelector('span').textContent = 'Gulir otomatis · Ketuk untuk lanjut';
           if (this.beatEngine) this.beatEngine.setAutoScrollPaused(false);
           this._scheduleNextSection();
         }
@@ -176,17 +228,26 @@
     setEnabled(on, silent = false) {
       this.enabled = on && !this.reducedMotion;
       this.toggleBtn.setAttribute('aria-pressed', String(this.enabled));
-      this.toggleBtn.setAttribute('aria-label', this.enabled ? 'Matikan gulir otomatis' : 'Nyalakan gulir otomatis');
+      this.toggleBtn.setAttribute(
+        'aria-label',
+        this.enabled ? 'Lanjut ke bagian berikutnya' : 'Gulir otomatis dimatikan — tahan untuk nyalakan'
+      );
       document.body.classList.toggle('autoscroll-active', this.enabled);
 
       this.toggleBtn.classList.toggle('autoscroll-toggle--active', this.enabled);
+      this.toggleBtn.classList.toggle('autoscroll-toggle--disabled', !this.enabled);
+
+      if (!this.enabled) {
+        this._stopCooldownRing();
+        this._setRingProgress(0);
+      }
 
       if (!silent) {
         if (this.enabled) {
           this.paused = false;
           this._scheduleNextSection();
           this.hint.classList.add('autoscroll-hint--visible');
-          this.hint.querySelector('span').textContent = 'Gulir otomatis · Ketuk untuk jeda';
+          this.hint.querySelector('span').textContent = 'Gulir otomatis · Ketuk untuk lanjut';
         } else {
           this._cancelScrollAnim();
           this.hint.classList.remove('autoscroll-hint--visible');
@@ -196,6 +257,51 @@
       if (this.beatEngine) this.beatEngine.setAutoScrollPaused(!this.enabled || this.paused);
     }
 
+    advanceToNext() {
+      if (!document.body.classList.contains('invite-open')) return;
+
+      if (this.paused) {
+        this.paused = false;
+        this.userPausedUntil = 0;
+        this.hint.classList.remove('autoscroll-hint--paused');
+        if (this.beatEngine) this.beatEngine.setAutoScrollPaused(false);
+      }
+
+      if (!this.enabled) {
+        this.setEnabled(true);
+      }
+
+      clearTimeout(this._sectionTimer);
+      this._cancelScrollAnim();
+
+      this.currentIndex = this._indexFromScroll();
+      this.currentIndex = Math.min(this.currentIndex + 1, this.sections.length - 1);
+
+      const section = this.sections[this.currentIndex];
+      if (!section) return;
+
+      this._scrollToSection(section, () => {
+        this._updateProgress();
+        this._startDwellTimer(section);
+      });
+    }
+
+    _indexFromScroll() {
+      const scrollY = window.scrollY + (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-height'), 10) || 56) + 40;
+      let idx = 0;
+      this.sections.forEach((sec, i) => {
+        if (sec.offsetTop <= scrollY) idx = i;
+      });
+      return idx;
+    }
+
+    _getDwellForSection(section) {
+      const id = section.id;
+      const dwell = SECTION_DWELL[id] ?? DEFAULT_SECTION_MS;
+      const isPauseSection = ['countdown', 'story', 'events', 'rsvp'].includes(id);
+      return isPauseSection ? PAUSE_SECTION_MS : dwell;
+    }
+
     _scheduleNextSection() {
       if (!this.enabled || this.paused || this.reducedMotion) return;
 
@@ -203,27 +309,66 @@
       const section = this.sections[this.currentIndex];
       if (!section) return;
 
-      const id = section.id;
-      const dwell = SECTION_DWELL[id] ?? DEFAULT_SECTION_MS;
-      const isPauseSection = ['countdown', 'story', 'events', 'rsvp'].includes(id);
-      const wait = isPauseSection ? PAUSE_SECTION_MS : dwell;
-
       this._scrollToSection(section, () => {
         this._updateProgress();
-        this._sectionTimer = setTimeout(() => {
-          this.currentIndex += 1;
-          if (this.currentIndex >= this.sections.length) {
-            if (this.loopAtEnd) {
-              this._showBackToTop();
-              this.currentIndex = 0;
-            } else {
-              this.setEnabled(false);
-              return;
-            }
-          }
-          this._scheduleNextSection();
-        }, wait);
+        this._startDwellTimer(section);
       });
+    }
+
+    _startDwellTimer(section) {
+      const wait = this._getDwellForSection(section);
+      this.dwellDuration = wait;
+      this.dwellStart = performance.now();
+      this._startCooldownRing();
+
+      clearTimeout(this._sectionTimer);
+      this._sectionTimer = setTimeout(() => {
+        this.currentIndex += 1;
+        if (this.currentIndex >= this.sections.length) {
+          if (this.loopAtEnd) {
+            this._showBackToTop();
+            this.currentIndex = 0;
+          } else {
+            this.setEnabled(false);
+            return;
+          }
+        }
+        this._scheduleNextSection();
+      }, wait);
+    }
+
+    _startCooldownRing() {
+      this._stopCooldownRing();
+      if (!this.enabled || this.paused) return;
+      this.cooldownRaf = requestAnimationFrame(this._updateCooldownRing);
+    }
+
+    _stopCooldownRing() {
+      if (this.cooldownRaf) {
+        cancelAnimationFrame(this.cooldownRaf);
+        this.cooldownRaf = null;
+      }
+    }
+
+    _updateCooldownRing() {
+      if (!this.enabled || this.paused) {
+        this._setRingProgress(0);
+        return;
+      }
+
+      const elapsed = performance.now() - this.dwellStart;
+      const progress = Math.min(1, elapsed / this.dwellDuration);
+      this._setRingProgress(progress);
+
+      if (progress < 1) {
+        this.cooldownRaf = requestAnimationFrame(this._updateCooldownRing);
+      }
+    }
+
+    _setRingProgress(progress) {
+      if (!this.ringProgress) return;
+      const offset = this._ringCircumference * (1 - progress);
+      this.ringProgress.style.strokeDashoffset = `${offset}`;
     }
 
     _showBackToTop() {
@@ -272,6 +417,7 @@
         this.scrollAnim = null;
       }
       clearTimeout(this._sectionTimer);
+      this._stopCooldownRing();
     }
 
     _updateProgress() {

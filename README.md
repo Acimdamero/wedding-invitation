@@ -11,7 +11,7 @@ A complete, deployable digital wedding invitation website built with pure HTML, 
 - **Opening cover/envelope animation** — classic Indonesian digital invite experience
 - **Bilingual structure** — Indonesian & English labels throughout
 - **Countdown timer** — to Akad Nikah date (13 July 2026, Makkah)
-- **Couple profiles** — Erzal Maulana Sandrya & Dhea Fadhillah Ramlan (elegant text cards with Islamic frames — photos optional)
+- **Couple profiles** — Erzal Maulana Sandrya & Dhea Fadillah Ramlan (elegant text cards with Islamic frames — photos optional)
 - **Love story timeline** — Instagram meet (2022) through Makkah akad (2026)
 - **Event schedule** — Akad Nikah (Makkah) & Resepsi (Maxi's Resto, Bandung)
 - **Photo gallery** — optional; disabled by default (`PHOTOS_ENABLED: false`)
@@ -67,7 +67,7 @@ wedding-invitation/
 
 ### Couple & Events
 
-- **Names:** Erzal Maulana Sandrya (groom), Dhea Fadhillah Ramlan (bride)
+- **Names:** Erzal Maulana Sandrya (groom), Dhea Fadillah Ramlan (bride)
 - **Akad:** 13 Juli 2026 — Makkah, Saudi Arabia
 - **Resepsi:** 22 Juli 2026, 15:30–18:30 WIB — Maxi's Resto, Bandung
 - **Parents (groom):** Ibu Ratna Karyati & Bapak Mamat Rahmat

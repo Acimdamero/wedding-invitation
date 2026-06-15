@@ -114,15 +114,16 @@
       <a href="#couple" class="nav__link">Mempelai</a>
       <a href="#story" class="nav__link">Kisah</a>
       <a href="#events" class="nav__link">Acara</a>
-      <a href="#gallery" class="nav__link nav__link--photos">Galeri</a>
+      <a href="#story" class="nav__link">Foto</a>
       <a href="#rsvp" class="nav__link">RSVP</a>
       <a href="#wishes" class="nav__link">Ucapan</a>
       <a href="#location" class="nav__link">Lokasi</a>
     </nav>
 
-    <!-- Hero — Masjidil Haram layered background (no couple photo) -->
+    <!-- Hero — Masjidil Haram layered background + subtle couple accent -->
     <section id="hero" class="hero section section--makkah" data-chapter="welcome">
       <div class="hero__bg parallax" data-speed="0.3" aria-hidden="true">
+        <img class="hero__photo" src="assets/photos/gallery-01.jpg" alt="" loading="lazy" aria-hidden="true">
         <div class="hero__overlay"></div>
         <img class="hero__arch" src="assets/ornaments/islamic-arch.svg" alt="" aria-hidden="true">
       </div>
@@ -185,6 +186,9 @@
             <div class="couple__frame" aria-hidden="true">
               <img src="assets/ornaments/mihrab-frame.svg" alt="">
             </div>
+            <div class="couple__photo couple__photo--round">
+              <img src="assets/photos/groom.jpg" alt="Erzal Maulana Sandrya" loading="lazy">
+            </div>
             <p class="couple__role">Mempelai Pria</p>
             <h3 class="couple__name">Erzal Maulana Sandrya</h3>
             <p class="couple__parents">Putra dari<br><strong>Ibu Ratna Karyati & Bapak Mamat Rahmat</strong></p>
@@ -203,8 +207,11 @@
             <div class="couple__frame" aria-hidden="true">
               <img src="assets/ornaments/mihrab-frame.svg" alt="">
             </div>
+            <div class="couple__photo couple__photo--round">
+              <img src="assets/photos/bride.jpg" alt="Dhea Fadillah Ramlan" loading="lazy">
+            </div>
             <p class="couple__role">Mempelai Wanita</p>
-            <h3 class="couple__name">Dhea Fadhillah Ramlan</h3>
+            <h3 class="couple__name">Dhea Fadillah Ramlan</h3>
             <p class="couple__parents">Putri dari<br><strong>Ibu Siti Aisah & Bapak Ramlan</strong></p>
             <div class="couple__social">
               <a href="#" aria-label="Instagram Dhea"><i class="fa-brands fa-instagram"></i></a>
@@ -224,26 +231,28 @@
           <span class="section-divider" aria-hidden="true"></span>
           <p class="section-desc">Setiap bab dalam kisah kami penuh makna dan berkah.</p>
         </div>
-        <!-- PHOTOS: set PHOTOS_ENABLED true and uncomment story photo -->
-        <!--
         <figure class="story__photo reveal">
+          <figcaption class="story__photo-caption">Awal Kisah</figcaption>
           <img src="assets/photos/childhood.jpg" alt="Erzal dan Dhea — kenangan masa kecil, awal kisah cinta" loading="lazy">
         </figure>
-        -->
         <div class="timeline">
           <article class="timeline__item reveal">
             <div class="timeline__dot" aria-hidden="true"></div>
             <div class="timeline__content glass">
               <time datetime="2022">2022</time>
-              <h3>Pertama Bertemu / First Meet</h3>
-              <p>We first met through Instagram. After 1 month of getting to know each other, we decided to start our relationship on 10 Juli 2022.</p>
+              <figure class="timeline__thumb">
+                <img src="assets/photos/gallery-02.jpg" alt="Erzal dan Dhea — momen awal" loading="lazy">
+              </figure>
+              <p>We first meet throught Instagram. After 1 Months of getting to know eachother, we decided to start our relationship on 10 Juli 2022.</p>
             </div>
           </article>
           <article class="timeline__item reveal">
             <div class="timeline__dot" aria-hidden="true"></div>
             <div class="timeline__content glass">
               <time datetime="2024">2024</time>
-              <h3>Langkah Serius / Serious Step</h3>
+              <figure class="timeline__thumb">
+                <img src="assets/photos/gallery-05.jpg" alt="Erzal dan Dhea — langkah serius" loading="lazy">
+              </figure>
               <p>This year we decided to take a more serious step towards marriage.</p>
             </div>
           </article>
@@ -251,8 +260,7 @@
             <div class="timeline__dot" aria-hidden="true"></div>
             <div class="timeline__content glass">
               <time datetime="2026">2026</time>
-              <h3>Menuju Pelaminan / The Big Day</h3>
-              <p>And finally we will get married and carry out the marriage contract in Mecca in July 2026.</p>
+              <p>And finally we will get married and carry out the marriage contract in Mecca in Juli 2026.</p>
             </div>
           </article>
         </div>
@@ -284,6 +292,9 @@
             <p class="event-card__note">Pelaksanaan akad nikah di tanah suci Makkah.</p>
           </article>
           <article class="event-card event-card--resepsi glass reveal card-3d">
+            <figure class="event-card__photo">
+              <img src="assets/photos/story.jpg" alt="Erzal dan Dhea — momen bersama" loading="lazy">
+            </figure>
             <div class="event-card__frame event-card__frame--sunda" aria-hidden="true">
               <img src="assets/ornaments/sunda/seserahan-motif.svg" alt="">
             </div>

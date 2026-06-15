@@ -86,6 +86,26 @@ Or redeploy Vercel if using Vercel-only deploy.
 | Admin can't see data | Log in first; verify user is **confirmed** |
 | CORS error | Wrong project URL in config |
 
+## Optional: one-command automation
+
+If you have a [Supabase access token](https://supabase.com/dashboard/account/tokens):
+
+```bash
+SUPABASE_ACCESS_TOKEN=sbp_... node scripts/supabase-autosetup.mjs
+```
+
+This creates the project, runs `schema.sql`, creates an admin user, updates config files, and tests INSERT.
+
+**Interactive (paste URL + anon key):**
+
+```bash
+./scripts/supabase-quick-setup.sh
+# or
+node scripts/apply-config.js https://YOUR_REF.supabase.co eyJhbG...
+```
+
+Admin credentials are saved to `supabase/ADMIN-CREDENTIALS.local.md` (gitignored).
+
 ## Optional CLI (if installed)
 
 ```bash
