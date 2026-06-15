@@ -4,7 +4,7 @@
  */
 window.WEDDING_CONFIG = {
   slug: 'erzal-dhea',
-  canonicalUrl: 'https://erzal-dhea-wedding.vercel.app/',
+  canonicalUrl: 'https://acimdamero.github.io/erzal-dhea-wedding/',
   supabaseUrl: 'YOUR_SUPABASE_URL',
   supabaseAnonKey: 'YOUR_SUPABASE_ANON_KEY',
 };

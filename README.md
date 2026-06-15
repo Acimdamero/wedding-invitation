@@ -104,7 +104,7 @@ Quick checklist:
 2. Run `supabase/schema.sql` in the SQL Editor
 3. Paste **Project URL** and **anon key** into `js/config.js` and `admin/config.js`
 4. Create an admin user in Supabase Auth (Authentication → Users)
-5. Deploy — admin URL: https://erzal-dhea-wedding.vercel.app/admin/ (backup: https://acimdamero.github.io/wedding-invitation/admin/)
+5. Deploy — admin URL: https://acimdamero.github.io/erzal-dhea-wedding/admin/
 
 Until keys are configured, forms run in **demo mode** (RSVP/wishes are not persisted).
 
@@ -127,10 +127,12 @@ Test on real devices before sharing with guests:
 
 | URL | Role |
 |-----|------|
-| **https://erzal-dhea-wedding.vercel.app/** | **Primary — share this with guests** |
-| https://acimdamero.github.io/wedding-invitation/ | Backup (GitHub Pages) |
+| **https://acimdamero.github.io/erzal-dhea-wedding/** | **Primary — share this with guests** |
+| https://erzal-dhea-wedding.vercel.app/ | Optional (deploy with `npx vercel login` then `npx vercel --prod --yes`) |
 
 WhatsApp share message: `Wedding Invitation Erzal & Dhea` + link.
+
+> **Redirect note:** The old URL `https://acimdamero.github.io/wedding-invitation/` no longer works after the repo rename. Use the primary URL above.
 
 ## Deployment
 
@@ -144,9 +146,9 @@ First-time setup requires one login: `npx vercel login` (browser OAuth).
 
 Project name: `erzal-dhea-wedding` → `https://erzal-dhea-wedding.vercel.app`
 
-### GitHub Pages (backup)
+### GitHub Pages (primary)
 
-Live site (backup): https://acimdamero.github.io/wedding-invitation/
+Live site: https://acimdamero.github.io/erzal-dhea-wedding/
 
 1. Push to `main` branch
 2. Settings → Pages → source: `main` / root
