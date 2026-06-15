@@ -181,33 +181,51 @@ def draw_envelope(base: Image.Image, cx: int, cy: int, env_w: int, env_h: int):
 
 
 def build_background() -> Image.Image:
+  """Blurred masjid photo + sage/cream gradient — sacred mood without people."""
   bg = Image.open(BG_PATH).convert("RGB")
   bg = crop_cover(bg, WIDTH, HEIGHT)
-  bg = bg.filter(ImageFilter.GaussianBlur(3))
-
-  overlay = Image.new("RGBA", (WIDTH, HEIGHT))
-  overlay_draw = ImageDraw.Draw(overlay)
-  for y in range(HEIGHT):
-    t = y / HEIGHT
-    if t < 0.4:
-      alpha = int(185 + (175 - 185) * (t / 0.4))
-    else:
-      alpha = int(175 + (195 - 175) * ((t - 0.4) / 0.6))
-    overlay_draw.line([(0, y), (WIDTH, y)], fill=(26, 36, 24, alpha))
-
-  # Sage/gold radial glows like cover__bg
-  glow = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
-  glow_draw = ImageDraw.Draw(glow)
-  glow_draw.ellipse((-80, 80, 520, 520), fill=(139, 154, 126, 28))
-  glow_draw.ellipse((700, -40, 1280, 340), fill=(196, 168, 130, 35))
-  glow = glow.filter(ImageFilter.GaussianBlur(40))
+  # Heavy blur: pilgrims and Kaaba become abstract color fields
+  bg = bg.filter(ImageFilter.GaussianBlur(radius=50))
 
   base = bg.convert("RGBA")
-  base = Image.alpha_composite(base, overlay)
+
+  # Sage-to-cream vertical gradient overlay (~75% opacity)
+  gradient = Image.new("RGBA", (WIDTH, HEIGHT))
+  gradient_draw = ImageDraw.Draw(gradient)
+  top_color = (52, 62, 48)      # dark sage
+  bottom_color = (72, 78, 62)   # warm sage
+  for y in range(HEIGHT):
+    t = y / max(HEIGHT - 1, 1)
+    r = int(top_color[0] + (bottom_color[0] - top_color[0]) * t)
+    g = int(top_color[1] + (bottom_color[1] - top_color[1]) * t)
+    b = int(top_color[2] + (bottom_color[2] - top_color[2]) * t)
+    alpha = int(175 + (185 - 175) * t)  # 68–72% overlay
+    gradient_draw.line([(0, y), (WIDTH, y)], fill=(r, g, b, alpha))
+  base = Image.alpha_composite(base, gradient)
+
+  # Subtle edge vignette (dark sage, gold-tinted center preserved)
+  vig_mask = Image.new("L", (WIDTH, HEIGHT), 0)
+  vig_draw = ImageDraw.Draw(vig_mask)
+  cx, cy = WIDTH // 2, HEIGHT // 2
+  max_r = int(((WIDTH / 2) ** 2 + (HEIGHT / 2) ** 2) ** 0.5)
+  for r in range(max_r, 0, -8):
+    alpha = int(200 * max(0, (r / max_r - 0.45) / 0.55) ** 1.5)
+    vig_draw.ellipse((cx - r, cy - r, cx + r, cy + r), fill=alpha)
+  vig_mask = vig_mask.filter(ImageFilter.GaussianBlur(18))
+  vig_layer = Image.new("RGBA", (WIDTH, HEIGHT), (26, 36, 24, 0))
+  vig_layer.putalpha(vig_mask)
+  base = Image.alpha_composite(base, vig_layer)
+
+  # Sage/gold radial glows (matches site cover__bg)
+  glow = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
+  glow_draw = ImageDraw.Draw(glow)
+  glow_draw.ellipse((-80, 80, 520, 520), fill=(139, 154, 126, 32))
+  glow_draw.ellipse((700, -40, 1280, 340), fill=(196, 168, 130, 40))
+  glow = glow.filter(ImageFilter.GaussianBlur(40))
   base = Image.alpha_composite(base, glow)
 
-  # Cream wash for readability (matches muted site look)
-  wash = Image.new("RGBA", (WIDTH, HEIGHT), (247, 245, 240, 45))
+  # Cream wash for envelope readability
+  wash = Image.new("RGBA", (WIDTH, HEIGHT), (247, 245, 240, 55))
   base = Image.alpha_composite(base, wash)
   return base
 

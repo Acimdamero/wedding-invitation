@@ -13,7 +13,7 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="Wedding Invitation Erzal & Dhea">
   <meta property="og:description" content="Kami mengundang Anda untuk merayakan hari bahagia kami. / We invite you to celebrate our special day.">
-  <meta property="og:image" content="https://erzal-dhea-wedding.vercel.app/assets/og-invite.jpg?v=2">
+  <meta property="og:image" content="https://erzal-dhea-wedding.vercel.app/assets/og-invite.jpg?v=3">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Wedding Invitation Erzal & Dhea">
@@ -21,7 +21,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Wedding Invitation Erzal & Dhea">
   <meta name="twitter:description" content="Kami mengundang Anda untuk merayakan hari bahagia kami. / We invite you to celebrate our special day.">
-  <meta name="twitter:image" content="https://erzal-dhea-wedding.vercel.app/assets/og-invite.jpg?v=2">
+  <meta name="twitter:image" content="https://erzal-dhea-wedding.vercel.app/assets/og-invite.jpg?v=3">
 
   <title>Wedding Invitation Erzal & Dhea</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
@@ -442,8 +442,8 @@
             <input type="number" id="rsvpGuests" name="guests" min="1" max="5" value="1">
           </div>
           <div class="form-group">
-            <label for="rsvpMessage">Pesan / Message</label>
-            <textarea id="rsvpMessage" name="message" rows="3" placeholder="Ucapan singkat atau permintaan khusus (opsional)"></textarea>
+            <label for="rsvpMessage">Catatan Kehadiran / Attendance Note</label>
+            <textarea id="rsvpMessage" name="message" rows="3" placeholder="Permintaan khusus terkait kehadiran (opsional). Untuk ucapan &amp; doa, gunakan Buku Tamu di bawah."></textarea>
           </div>
           <button type="submit" class="btn btn--primary">Kirim Konfirmasi / Submit</button>
           <p class="form-note" id="rsvpNote" role="status" aria-live="polite"></p>
@@ -466,12 +466,15 @@
             <input type="text" id="wishName" name="name" required placeholder="Nama lengkap">
           </div>
           <div class="form-group">
-            <label for="wishMessage">Ucapan / Wishes</label>
-            <textarea id="wishMessage" name="message" rows="3" required placeholder="Selamat menempuh hidup baru..."></textarea>
+            <label for="wishMessage">Ucapan &amp; Doa / Wishes &amp; Prayers</label>
+            <textarea id="wishMessage" name="message" rows="3" required placeholder="Selamat menempuh hidup baru, semoga bahagia selalu..."></textarea>
           </div>
           <button type="submit" class="btn btn--secondary">Kirim Ucapan / Send</button>
         </form>
-        <div class="wishes__list" id="wishesList" aria-live="polite"></div>
+        <div class="wishes__feed reveal">
+          <h3 class="wishes__feed-title">Ucapan &amp; Doa dari Tamu</h3>
+          <div class="wishes__list" id="wishesList" aria-live="polite"></div>
+        </div>
       </div>
     </section>
 
