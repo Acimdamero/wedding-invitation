@@ -871,9 +871,28 @@ button {
   margin: 0 auto 3rem;
   border-radius: var(--radius);
   overflow: hidden;
-  box-shadow: var(--shadow-glass);
-  border: 2px solid var(--color-accent);
+  box-shadow:
+    0 8px 32px rgba(26, 36, 24, 0.18),
+    0 0 0 3px var(--color-accent),
+    inset 0 0 0 1px rgba(232, 213, 181, 0.4);
+  border: 1px solid rgba(196, 168, 130, 0.65);
   position: relative;
+  background: rgba(26, 36, 24, 0.04);
+}
+
+.story__photo-btn {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: zoom-in;
+  line-height: 0;
+}
+
+.story__photo-btn:focus-visible {
+  outline: 2px solid var(--color-accent-light);
+  outline-offset: 3px;
 }
 
 .story__photo-caption {
@@ -882,14 +901,15 @@ button {
   left: 50%;
   transform: translateX(-50%);
   z-index: 1;
-  font-size: 0.7rem;
-  letter-spacing: 0.2em;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--color-accent-light);
   background: rgba(26, 36, 24, 0.65);
   padding: 0.35rem 1rem;
   border-radius: 20px;
   border: 1px solid rgba(232, 213, 181, 0.35);
+  white-space: nowrap;
 }
 
 .story__photo img {
@@ -1184,6 +1204,13 @@ button {
 
 .lightbox__nav--prev { left: 1rem; }
 .lightbox__nav--next { right: 1rem; }
+
+.lightbox--single .lightbox__img {
+  max-width: min(92vw, 520px);
+  max-height: 85vh;
+  border: 3px solid var(--color-accent);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.45);
+}
 
 /* ============================================
    FORMS

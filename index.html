@@ -123,7 +123,6 @@
     <!-- Hero — Masjidil Haram layered background + subtle couple accent -->
     <section id="hero" class="hero section section--makkah" data-chapter="welcome">
       <div class="hero__bg parallax" data-speed="0.3" aria-hidden="true">
-        <img class="hero__photo" src="assets/photos/gallery-01.jpg" alt="" loading="lazy" aria-hidden="true">
         <div class="hero__overlay"></div>
         <img class="hero__arch" src="assets/ornaments/islamic-arch.svg" alt="" aria-hidden="true">
       </div>
@@ -186,9 +185,6 @@
             <div class="couple__frame" aria-hidden="true">
               <img src="assets/ornaments/mihrab-frame.svg" alt="">
             </div>
-            <div class="couple__photo couple__photo--round">
-              <img src="assets/photos/groom.jpg" alt="Erzal Maulana Sandrya" loading="lazy">
-            </div>
             <p class="couple__role">Mempelai Pria</p>
             <h3 class="couple__name">Erzal Maulana Sandrya</h3>
             <p class="couple__parents">Putra dari<br><strong>Ibu Ratna Karyati & Bapak Mamat Rahmat</strong></p>
@@ -206,9 +202,6 @@
           <article class="couple__card couple__card--text glass">
             <div class="couple__frame" aria-hidden="true">
               <img src="assets/ornaments/mihrab-frame.svg" alt="">
-            </div>
-            <div class="couple__photo couple__photo--round">
-              <img src="assets/photos/bride.jpg" alt="Dhea Fadillah Ramlan" loading="lazy">
             </div>
             <p class="couple__role">Mempelai Wanita</p>
             <h3 class="couple__name">Dhea Fadillah Ramlan</h3>
@@ -232,17 +225,16 @@
           <p class="section-desc">Setiap bab dalam kisah kami penuh makna dan berkah.</p>
         </div>
         <figure class="story__photo reveal">
-          <figcaption class="story__photo-caption">Awal Kisah</figcaption>
-          <img src="assets/photos/childhood.jpg" alt="Erzal dan Dhea — kenangan masa kecil, awal kisah cinta" loading="lazy">
+          <figcaption class="story__photo-caption">Awal Kisah / Our Beginning</figcaption>
+          <button type="button" class="story__photo-btn" aria-label="Perbesar foto kenangan masa kecil">
+            <img src="assets/photos/childhood.jpg" alt="Erzal dan Dhea — kenangan masa kecil" loading="lazy">
+          </button>
         </figure>
         <div class="timeline">
           <article class="timeline__item reveal">
             <div class="timeline__dot" aria-hidden="true"></div>
             <div class="timeline__content glass">
               <time datetime="2022">2022</time>
-              <figure class="timeline__thumb">
-                <img src="assets/photos/gallery-02.jpg" alt="Erzal dan Dhea — momen awal" loading="lazy">
-              </figure>
               <p>We first meet throught Instagram. After 1 Months of getting to know eachother, we decided to start our relationship on 10 Juli 2022.</p>
             </div>
           </article>
@@ -250,9 +242,6 @@
             <div class="timeline__dot" aria-hidden="true"></div>
             <div class="timeline__content glass">
               <time datetime="2024">2024</time>
-              <figure class="timeline__thumb">
-                <img src="assets/photos/gallery-05.jpg" alt="Erzal dan Dhea — langkah serius" loading="lazy">
-              </figure>
               <p>This year we decided to take a more serious step towards marriage.</p>
             </div>
           </article>
@@ -292,9 +281,6 @@
             <p class="event-card__note">Pelaksanaan akad nikah di tanah suci Makkah.</p>
           </article>
           <article class="event-card event-card--resepsi glass reveal card-3d">
-            <figure class="event-card__photo">
-              <img src="assets/photos/story.jpg" alt="Erzal dan Dhea — momen bersama" loading="lazy">
-            </figure>
             <div class="event-card__frame event-card__frame--sunda" aria-hidden="true">
               <img src="assets/ornaments/sunda/seserahan-motif.svg" alt="">
             </div>
@@ -317,7 +303,12 @@
       </div>
     </section>
 
-    <!-- PHOTOS: set PHOTOS_ENABLED true and uncomment gallery + lightbox sections -->
+    <div class="lightbox lightbox--single" id="storyLightbox" role="dialog" aria-label="Foto kenangan masa kecil" aria-modal="true" hidden>
+      <button class="lightbox__close" type="button" aria-label="Tutup foto"><i class="fa-solid fa-xmark"></i></button>
+      <img class="lightbox__img" id="storyLightboxImg" src="" alt="Erzal dan Dhea — kenangan masa kecil">
+    </div>
+
+    <!-- PHOTOS: gallery removed — single childhood photo in Love Story only -->
     <!--
     <section id="gallery" class="gallery section" data-chapter="gallery">
       <div class="container">

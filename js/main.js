@@ -20,6 +20,9 @@
   const nav = document.getElementById('nav');
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightboxImg');
+  const storyLightbox = document.getElementById('storyLightbox');
+  const storyLightboxImg = document.getElementById('storyLightboxImg');
+  const storyPhotoBtn = document.querySelector('.story__photo-btn');
   const copyLinkBtn = document.getElementById('copyLink');
   const shareToast = document.getElementById('shareToast');
   const shareWa = document.getElementById('shareWa');
@@ -513,6 +516,46 @@
   }
 
   initGallery();
+  initStoryPhotoLightbox();
+
+  // ============================================
+  // Story Photo Lightbox (single image)
+  // ============================================
+  function initStoryPhotoLightbox() {
+    if (!PHOTOS_ENABLED || !storyLightbox || !storyLightboxImg || !storyPhotoBtn) return;
+
+    const storyImg = storyPhotoBtn.querySelector('img');
+    if (!storyImg) return;
+
+    storyPhotoBtn.addEventListener('click', () => {
+      storyLightboxImg.src = storyImg.src;
+      storyLightboxImg.alt = storyImg.alt;
+      storyLightbox.hidden = false;
+      document.body.style.overflow = 'hidden';
+      if (autoScrollEngine) autoScrollEngine.setEnabled(false);
+      if (beatEngine) beatEngine.setAutoScrollPaused(true);
+    });
+
+    storyLightbox.querySelector('.lightbox__close').addEventListener('click', closeStoryLightbox);
+    storyLightbox.addEventListener('click', (e) => {
+      if (e.target === storyLightbox) closeStoryLightbox();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (storyLightbox.hidden) return;
+      if (e.key === 'Escape') closeStoryLightbox();
+    });
+  }
+
+  function closeStoryLightbox() {
+    if (!storyLightbox) return;
+    storyLightbox.hidden = true;
+    document.body.style.overflow = '';
+    if (autoScrollEngine && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      autoScrollEngine.setEnabled(true);
+    }
+    if (beatEngine) beatEngine.setAutoScrollPaused(false);
+  }
 
   // ============================================
   // Share / Copy Link
