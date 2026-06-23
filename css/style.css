@@ -1548,11 +1548,38 @@ button {
 /* ============================================
    LOCATION
    ============================================ */
+.location__venues {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
 .location__grid {
   display: grid;
   grid-template-columns: 1fr 1.2fr;
   gap: 2rem;
   align-items: stretch;
+}
+
+.location__grid--akad .location__info {
+  border-top: 3px solid var(--color-accent);
+}
+
+.location__en {
+  font-size: 0.8rem;
+  color: var(--color-accent);
+  letter-spacing: 0.1em;
+  margin-top: -0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.location__note {
+  font-size: 0.8rem;
+  color: var(--color-text-light);
+  font-style: italic;
+  margin-top: -0.75rem;
+  margin-bottom: 1.25rem;
+  font-weight: 300;
 }
 
 .location__info {
