@@ -256,18 +256,46 @@ a.btn,
   }
 
   .envelope {
-    width: min(300px, 88vw);
-    height: auto;
-    min-height: 200px;
-    margin-bottom: 1.5rem;
+    width: min(300px, 92vw);
+    min-height: 290px;
+    margin-bottom: 1.25rem;
   }
 
-  .envelope__names {
-    font-size: clamp(1.6rem, 7vw, 2rem);
+  .envelope__flap--top {
+    height: 72px;
+  }
+
+  .envelope__flap--bottom {
+    height: 44px;
   }
 
   .envelope__card {
-    padding: 1rem;
+    padding: 4.25rem 1rem 2.75rem;
+  }
+
+  .envelope .envelope__greeting.islamic-greeting--salam {
+    font-size: clamp(0.6rem, 2.8vw, 0.72rem);
+    line-height: 1.4;
+    max-width: 18em;
+  }
+
+  .envelope__label {
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    line-height: 1.4;
+  }
+
+  .envelope__names {
+    font-size: clamp(1.5rem, 6.5vw, 1.85rem);
+  }
+
+  .envelope__date {
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+  }
+
+  .envelope__guest {
+    display: none;
   }
 
   .cover__open-btn {
@@ -409,6 +437,18 @@ a.btn,
 }
 
 @media (max-width: 360px) {
+  .envelope {
+    min-height: 280px;
+  }
+
+  .envelope__card {
+    padding: 4rem 0.85rem 2.5rem;
+  }
+
+  .envelope__flap--top {
+    height: 68px;
+  }
+
   .gallery__grid {
     grid-template-columns: 1fr;
   }
